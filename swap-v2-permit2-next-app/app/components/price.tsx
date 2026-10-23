@@ -8,7 +8,7 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import { erc20Abi, Address } from "viem";
+import { erc20Abi, Address, zeroAddress } from "viem";
 import {
   MAINNET_TOKENS,
   MAINNET_TOKENS_BY_SYMBOL,
@@ -182,6 +182,8 @@ export default function PriceView({
     parsedBuyAmount,
     chainId,
     sellAmount,
+    buyTokenDecimals,
+    taker,
     setPrice,
     FEE_RECIPIENT,
     AFFILIATE_FEE,
@@ -495,32 +497,17 @@ export default function PriceView({
     disabled?: boolean;
     price: any;
   }) {
-    // If price.issues.allowance is null, show the Review Trade button
-    if (price?.issues.allowance === null) {
-      return (
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => {
-            // fetch data, when finished, show quote view
-            onClick();
-          }}
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-25"
-        >
-          {disabled ? "Insufficient Balance" : "Review Trade"}
-        </button>
-      );
-    }
-
-    // Determine the spender from price.issues.allowance
-    const spender = price?.issues.allowance.spender;
+    const shouldReview = price?.issues?.allowance === null;
+    const spender = price?.issues?.allowance?.spender as Address | undefined;
+    const spenderAddress = spender ?? zeroAddress;
 
     // 1. Read from erc20, check approval for the determined spender to spend sellToken
     const { data: allowance, refetch } = useReadContract({
       address: sellTokenAddress,
       abi: erc20Abi,
       functionName: "allowance",
-      args: [taker, spender],
+      args: [taker, spenderAddress],
+      query: { enabled: !shouldReview && Boolean(spender) },
     });
     console.log("checked spender approval");
 
@@ -529,7 +516,8 @@ export default function PriceView({
       address: sellTokenAddress,
       abi: erc20Abi,
       functionName: "approve",
-      args: [spender, MAX_ALLOWANCE],
+      args: [spenderAddress, MAX_ALLOWANCE],
+      query: { enabled: !shouldReview && Boolean(spender) },
     });
 
     // Define useWriteContract for the 'approve' operation
@@ -552,6 +540,19 @@ export default function PriceView({
       }
     }, [data, refetch]);
 
+    if (shouldReview) {
+      return (
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={onClick}
+          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-25"
+        >
+          {disabled ? "Insufficient Balance" : "Review Trade"}
+        </button>
+      );
+    }
+
     if (error) {
       return <div>Something went wrong: {error.message}</div>;
     }
@@ -567,7 +568,7 @@ export default function PriceView({
                 abi: erc20Abi,
                 address: sellTokenAddress,
                 functionName: "approve",
-                args: [spender, MAX_ALLOWANCE],
+                args: [spenderAddress, MAX_ALLOWANCE],
               });
               console.log("approving spender to spend sell token");
 

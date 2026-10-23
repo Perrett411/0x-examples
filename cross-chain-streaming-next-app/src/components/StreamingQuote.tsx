@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import QuoteCard from "./QuoteCard";
 
 interface Quote {
@@ -71,12 +71,12 @@ export default function StreamingQuote({
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [liquidityAvailable, setLiquidityAvailable] = useState<boolean | null>(
-    null
+    null,
   );
   const abortControllerRef = useRef<AbortController | null>(null);
   const hasStartedRef = useRef(false);
 
-  const startStreaming = async () => {
+  const startStreaming = useCallback(async () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -146,8 +146,6 @@ export default function StreamingQuote({
 
             try {
               const data = JSON.parse(eventData);
-              console.info("parseddata", data);
-
               const streamEvent = data as StreamEvent;
 
               // Handle different event types
@@ -188,12 +186,7 @@ export default function StreamingQuote({
                 return;
               }
             } catch (err) {
-              console.error(
-                "Error parsing SSE data:",
-                err,
-                "Raw data:",
-                eventData
-              );
+              console.error("Error parsing SSE data:", err);
               setError("Error parsing server response");
             }
           }
@@ -214,7 +207,15 @@ export default function StreamingQuote({
       setIsStreaming(false);
       setIsComplete(true);
     }
-  };
+  }, [
+    apiKey,
+    buyToken,
+    destinationChain,
+    originAddress,
+    originChain,
+    sellAmount,
+    sellToken,
+  ]);
 
   const stopStreaming = () => {
     if (abortControllerRef.current) {
@@ -230,7 +231,7 @@ export default function StreamingQuote({
       hasStartedRef.current = true;
       setTimeout(() => startStreaming(), 0);
     }
-  }, []);
+  }, [autoStart, startStreaming]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -259,6 +260,7 @@ export default function StreamingQuote({
           <div className="flex gap-3">
             {!isStreaming && !isComplete && (
               <button
+                type="button"
                 onClick={startStreaming}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
@@ -267,6 +269,7 @@ export default function StreamingQuote({
             )}
             {isStreaming && (
               <button
+                type="button"
                 onClick={stopStreaming}
                 className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
@@ -305,8 +308,11 @@ export default function StreamingQuote({
               Quotes Found ({quotes.length})
             </h3>
             <div className="grid gap-4">
-              {quotes.map((quote, index) => (
-                <QuoteCard key={`quote-${index}`} quote={quote} />
+              {quotes.map((quote) => (
+                <QuoteCard
+                  key={quote.id ?? String(quote.seqNum)}
+                  quote={quote}
+                />
               ))}
             </div>
           </div>

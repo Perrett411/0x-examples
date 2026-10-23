@@ -44,7 +44,7 @@ async function main() {
   const client = await createModularAccountV2Client({
     mode: "default",
     chain: base,
-    transport: alchemy({ apiKey: ALCHEMY_API_KEY }),
+    transport: alchemy({ apiKey: ALCHEMY_API_KEY! }),
     signer,
   });
 

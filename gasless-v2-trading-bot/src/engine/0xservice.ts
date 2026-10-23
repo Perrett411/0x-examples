@@ -233,7 +233,7 @@ export class ZeroExService {
                   serializedTransaction: signedTransaction,
                 });
 
-                await [this.client.waitForTransactionReceipt({ hash })];
+                await this.client.waitForTransactionReceipt({ hash });
 
                 process.exit(0);
               } else {
@@ -465,7 +465,7 @@ export class ZeroExService {
 
     const fetchStatus = async (tradeHash: string) => {
       const response = await fetch(
-        'http://api.0x.org/gasless/status/' +
+        'https://api.0x.org/gasless/status/' +
           tradeHash +
           '?' +
           'chainId=' +
