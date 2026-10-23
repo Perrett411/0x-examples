@@ -16,8 +16,6 @@ import { privateKeyToAccount } from "viem/accounts";
 import { base } from "viem/chains";
 import { usdcAbi } from "./abi/usdc-abi";
 
-const qs = require("qs");
-
 // load env vars
 dotenv();
 const { PRIVATE_KEY, ZERO_EX_API_KEY, ALCHEMY_HTTP_TRANSPORT_URL } =

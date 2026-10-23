@@ -103,10 +103,10 @@ Still have questions? [Reach out to our team](https://0x.org/docs/introduction/c
 
 ## Getting Started
 
-1. Create a `.env` file and setup the required environment variables
+1. Create a `.env.local` file and set up the required environment variables. Keep the 0x API key server-side; do not expose it with a `NEXT_PUBLIC_` prefix.
 
 ```
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 
@@ -139,4 +139,3 @@ open http://localhost:3000
 ## Supported Networks
 
 See [here](https://0x.org/docs/introduction/0x-cheat-sheet#-chain-support) for the latest list of supported networks.
-

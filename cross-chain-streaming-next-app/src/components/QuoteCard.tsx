@@ -26,7 +26,7 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
   };
 
   const formatAmount = (amount: string, decimals = 6) => {
-    const num = parseFloat(amount) / Math.pow(10, decimals);
+    const num = parseFloat(amount) / 10 ** decimals;
     return num.toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 6,
@@ -34,7 +34,7 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
   };
 
   const formatGas = (gasWei: string) => {
-    const gasEth = parseFloat(gasWei) / Math.pow(10, 18);
+    const gasEth = parseFloat(gasWei) / 10 ** 18;
     if (gasEth < 0.001) return "< 0.001 ETH";
     return `${gasEth.toFixed(4)} ETH`;
   };

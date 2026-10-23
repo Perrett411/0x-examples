@@ -12,16 +12,16 @@ import { privateKeyToAccount } from "viem/accounts";
 import { base } from "viem/chains";
 import { wethAbi } from "./abi/weth-abi";
 
-const qs = require("qs");
-
 // load env vars
 dotenv();
-const { PRIVATE_KEY, QUICKNODE_HTTP_TRANSPORT_URL } = process.env;
+const { PRIVATE_KEY, QUICKNODE_HTTP_TRANSPORT_URL, ZEROX_ADDON_PATH } =
+  process.env;
 
 // validate requirements
 if (!PRIVATE_KEY) throw new Error("missing PRIVATE_KEY.");
 if (!QUICKNODE_HTTP_TRANSPORT_URL)
   throw new Error("missing QUICKNODE_HTTP_TRANSPORT_URL.");
+if (!ZEROX_ADDON_PATH) throw new Error("missing ZEROX_ADDON_PATH.");
 
 // fetch headers
 const headers = new Headers({
@@ -52,7 +52,7 @@ const weth = getContract({
 const main = async () => {
   // specify sell amount
   const sellAmount = parseUnits("0.1", await usdc.read.decimals());
-  const quicknodeBaseUrl = `${process.env.QUICKNODE_HTTP_TRANSPORT_URL}${process.env.ZEROX_ADDON_PATH}`;
+  const quicknodeBaseUrl = `${QUICKNODE_HTTP_TRANSPORT_URL}${ZEROX_ADDON_PATH}`;
 
   // 1. fetch price
   const priceParams = new URLSearchParams({

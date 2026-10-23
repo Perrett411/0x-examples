@@ -14,8 +14,6 @@ import { base } from "viem/chains";
 import { wethAbi } from "./abi/weth-abi";
 import { SignatureType, splitSignature } from "./utils/signature";
 
-const qs = require("qs");
-
 // load env vars
 dotenv();
 const { PRIVATE_KEY, ZERO_EX_API_KEY, ALCHEMY_HTTP_TRANSPORT_URL } =

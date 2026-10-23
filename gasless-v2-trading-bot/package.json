@@ -7,7 +7,7 @@
     "build": "tsc --build",
     "start": "node ./dist/src/index.js",
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
-    "lint": "eslint ./src/**/*.{ts}",
+    "lint": "eslint \"src/**/*.ts\"",
     "prettier": "prettier -c --write ./src/**/*.{ts}"
   },
   "author": "Syntax",
